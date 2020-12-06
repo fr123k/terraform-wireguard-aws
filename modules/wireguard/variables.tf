@@ -26,9 +26,12 @@ variable "vpc_id" {
   description = "The VPC ID in which Terraform will launch the resources."
 }
 
-variable "subnet_ids" {
-  type        = list(string)
-  description = "A list of subnets for the Autoscaling Group to use for launching instances. May be a single subnet, but it must be an element in a list."
+variable "subnet" {
+  type = object({
+    id = string
+    cidr_block = string
+  })
+  description = "A subnet aws resource for the Autoscaling Group to use for launching instances. Only a single subnet."
 }
 
 variable "wg_client_public_keys" {

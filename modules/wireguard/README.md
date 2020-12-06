@@ -15,7 +15,7 @@ Before using this module, you'll need to generate a key pair for your server and
 ## Variables
 | Variable Name | Type | Required |Description |
 |---------------|-------------|-------------|-------------|
-|`subnet_ids`|`list`|Yes|A list of subnets for the Autoscaling Group to use for launching instances. May be a single subnet, but it must be an element in a list.|
+|`subnet`|`object`|Yes|A subnet resource for the Autoscaling Group to use for launching instances.|
 |`ssh_key_id`|`string`|Yes|A SSH public key ID to add to the VPN instance.|
 |`vpc_id`|`string`|Yes|The VPC ID in which Terraform will launch the resources.|
 |`env`|`string`|Optional - defaults to `prod`|The name of environment for WireGuard. Used to differentiate multiple deployments.|
