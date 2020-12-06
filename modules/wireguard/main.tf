@@ -1,4 +1,9 @@
 locals {
+  tags = {
+    Project  = "wireguard"
+    Name = aws_launch_configuration.wireguard_launch_config.name
+  }
+
   # turn the sg into a sorted list of string
   sg_wireguard_external = sort([aws_security_group.sg_wireguard_external.id])
 
@@ -42,6 +47,12 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
   owners = ["099720109477"] # Canonical
+}
+
+data "aws_instances" "wireguards" {
+  instance_tags = local.tags
+
+  depends_on = [aws_autoscaling_group.wireguard_asg]
 }
 
 resource "aws_launch_configuration" "wireguard_launch_config" {

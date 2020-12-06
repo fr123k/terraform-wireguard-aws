@@ -13,3 +13,7 @@ output "vpn_asg_name" {
   description = "ID of the internal Security Group to associate with other resources needing to be accessed on VPN."
 }
 
+output "wireguards_eip" {
+   value = data.aws_instances.wireguards.public_ips
+   description = "The elastic ip address of the wireguard server or servers."
+}
