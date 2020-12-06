@@ -11,7 +11,7 @@ module "wireguard" {
   subnet                = aws_subnet.wireguard
   use_eip               = true
   wg_client_public_keys = [
-    {"10.8.0.2/32" = "XSGknxaW7PwqiFD061TemUozeTxxafusIRr5dz2fUhw="}, # make sure these are correct
+    {"${cidrhost(aws_subnet.wireguard.cidr_block, 2)}/32" = "XSGknxaW7PwqiFD061TemUozeTxxafusIRr5dz2fUhw="}, # make sure these are correct
   ]
 }
 

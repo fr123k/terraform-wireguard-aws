@@ -1,5 +1,5 @@
 locals {
-  network_cidr = "10.8.0.0/16"
+  network_cidr = "10.8.0.0"
 }
 
 data "aws_route_table" "wireguard" {
@@ -7,7 +7,7 @@ data "aws_route_table" "wireguard" {
 }
 
 resource "aws_vpc" "wireguard" {
-  cidr_block       = local.network_cidr
+  cidr_block       = "${local.network_cidr}/16"
   instance_tenancy = "default"
 
   enable_dns_hostnames = true
@@ -36,7 +36,7 @@ resource "aws_route" "wireguard" {
 
 resource "aws_subnet" "wireguard" {
   vpc_id     = aws_vpc.wireguard.id
-  cidr_block = "10.8.0.0/24"
+  cidr_block = "${local.network_cidr}/24"
 
   tags = {
     Name = "wireguard"
