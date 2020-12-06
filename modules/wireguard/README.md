@@ -10,8 +10,6 @@ Before using this module, you'll need to generate a key pair for your server and
   - `wg genkey | tee client1-privatekey | wg pubkey > client1-publickey`
 - Generate a key pair for the server
   - `wg genkey | tee server-privatekey | wg pubkey > server-publickey`
-- Add the server private key to the AWS SSM parameter: `/wireguard/wg-server-private-key`
-  - `aws ssm put-parameter --name /wireguard/wg-server-private-key --type SecureString --value $ServerPrivateKeyValue`
 - Add each client's public key, along with the next available IP address as a key:value pair to the wg_client_public_keys map. See Usage for details.
 
 ## Variables
@@ -22,7 +20,7 @@ Before using this module, you'll need to generate a key pair for your server and
 |`vpc_id`|`string`|Yes|The VPC ID in which Terraform will launch the resources.|
 |`env`|`string`|Optional - defaults to `prod`|The name of environment for WireGuard. Used to differentiate multiple deployments.|
 |`use_eip`|`bool`|Optional|Whether to attach an [Elastic IP](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html) address to the VPN server. Useful for avoiding changing IPs.|
-|`eip_id`|`string`|Optional|When `use_eip` is enabled, specify the ID of the Elastic IP to which the VPN server will attach.||`target_group_arns`|`string`|Optional|The Loadbalancer Target Group to which the vpn server ASG will attach.|
+|`target_group_arns`|`string`|Optional|The Loadbalancer Target Group to which the vpn server ASG will attach.|
 |`associate_public_ip_address`|`boolean`|Optional - defaults to `true`|Whether or not to associate a public ip.|
 |`additional_security_group_ids`|`list`|Optional|Used to allow added access to reach the WG servers or allow loadbalancer health checks.|
 |`asg_min_size`|`integer`|Optional - default to `1`|Number of VPN servers to permit minimum, only makes sense in loadbalanced scenario.|
@@ -50,8 +48,6 @@ module "wireguard" {
   ssh_key_id            = "ssh-key-id-0987654"
   vpc_id                = "vpc-01234567"
   subnet_ids            = ["subnet-01234567"]
-  eip_id                = "${aws_eip.wireguard.id}"
-  wg_server_net         = "192.168.2.1/24" # client IPs MUST exist in this net
   wg_client_public_keys = [
     {"192.168.2.2/32" = "QFX/DXxUv56mleCJbfYyhN/KnLCrgp7Fq2fyVOk/FWU="}, # make sure these are correct
     {"192.168.2.3/32" = "+IEmKgaapYosHeehKW8MCcU65Tf5e4aXIvXGdcUlI0Q="}, # wireguard is sensitive
@@ -73,7 +69,6 @@ module "wireguard" {
   asg_desired_capacity          = 2 # we want two servers running most of the time
   asg_max_size                  = 5 # this cleanly permits us to allow rolling updates, growing and shrinking
   associate_public_ip_address   = false # we don't want eip, we want all our traffic out of a single NAT for whitelisting simplicity
-  wg_server_net                 = "192.168.2.1/24" # client IPs MUST exist in this net
   wg_client_public_keys = [
     {"192.168.2.2/32" = "QFX/DXxUv56mleCJbfYyhN/KnLCrgp7Fq2fyVOk/FWU="}, # make sure these are correct
     {"192.168.2.3/32" = "+IEmKgaapYosHeehKW8MCcU65Tf5e4aXIvXGdcUlI0Q="}, # wireguard is sensitive
@@ -132,6 +127,7 @@ resource "aws_lb_listener" "wireguard" {
 |`vpn_asg_name`|The name of the wireguard Auto Scaling Group|
 |`vpn_sg_admin_id`|ID of the internal Security Group to associate with other resources needing to be accessed on VPN.|
 |`vpn_sg_external_id`|ID of the external Security Group to associate with the VPN.|
+|`wireguards_eip`|The public elastic ip addresses that were assigned from the auto scaling group. The type is list. |
 
 ## Caveats
 

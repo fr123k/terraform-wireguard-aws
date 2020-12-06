@@ -36,11 +36,6 @@ variable "wg_client_public_keys" {
   description = "List of maps of client IPs and public keys. See Usage in README for details."
 }
 
-variable "wg_server_net" {
-  default     = "192.168.2.1/24"
-  description = "IP range for vpn server - make sure your Client ips are in this range but not the specific ip i.e. not .1"
-}
-
 variable "wg_server_port" {
   default     = 51820
   description = "Port for the vpn server"

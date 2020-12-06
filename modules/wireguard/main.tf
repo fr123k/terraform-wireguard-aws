@@ -15,12 +15,8 @@ data "template_file" "user_data" {
   template = file("${path.module}/templates/user-data.txt")
 
   vars = {
-    wg_server_private_key = data.aws_ssm_parameter.wg_server_private_key.value
-    wg_server_net         = var.wg_server_net
     wg_server_port        = var.wg_server_port
     peers                 = join("\n", data.template_file.wg_client_data_json.*.rendered)
-    use_eip               = var.use_eip ? "enabled" : "disabled"
-    eip_id = ""
   }
 }
 
@@ -60,7 +56,6 @@ resource "aws_launch_configuration" "wireguard_launch_config" {
   image_id                    = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   key_name                    = var.ssh_key_id
-  # iam_instance_profile        = (var.use_eip ? aws_iam_instance_profile.wireguard_profile[0].name : null)
   user_data                   = data.template_file.user_data.rendered
   security_groups             = local.security_groups_ids
 
