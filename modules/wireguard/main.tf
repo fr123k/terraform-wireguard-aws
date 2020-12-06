@@ -1,3 +1,11 @@
+locals {
+  # turn the sg into a sorted list of string
+  sg_wireguard_external = sort([aws_security_group.sg_wireguard_external.id])
+
+  # clean up and concat the above wireguard default sg with the additional_security_group_ids
+  security_groups_ids = compact(concat(var.additional_security_group_ids, local.sg_wireguard_external))
+}
+
 data "template_file" "user_data" {
   template = file("${path.module}/templates/user-data.txt")
 
@@ -34,16 +42,6 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
   owners = ["099720109477"] # Canonical
-}
-
-# turn the sg into a sorted list of string
-locals {
-  sg_wireguard_external = sort([aws_security_group.sg_wireguard_external.id])
-}
-
-# clean up and concat the above wireguard default sg with the additional_security_group_ids
-locals {
-  security_groups_ids = compact(concat(var.additional_security_group_ids, local.sg_wireguard_external))
 }
 
 resource "aws_launch_configuration" "wireguard_launch_config" {
