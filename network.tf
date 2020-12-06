@@ -18,6 +18,17 @@ resource "aws_vpc" "wireguard" {
   }
 }
 
+# Run into dns problems with internal AWS DNS servers during development.
+# So as a quick fix define public stable once from Cloudflare.
+resource "aws_vpc_dhcp_options" "dns_resolver" {
+  domain_name_servers = ["1.1.1.1", "1.0.0.1"]
+}
+
+resource "aws_vpc_dhcp_options_association" "dns_resolver" {
+  vpc_id          = aws_vpc.wireguard.id
+  dhcp_options_id = aws_vpc_dhcp_options.dns_resolver.id
+}
+
 # without an intener gateway all the VM in this vpc has no internet connection
 resource "aws_internet_gateway" "wireguard" {
   vpc_id = aws_vpc.wireguard.id
