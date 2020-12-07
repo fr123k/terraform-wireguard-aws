@@ -4,6 +4,7 @@ TF_INIT_CLI_OPTIONS?="-input=true"
 TF_PLAN_CLI_OPTIONS?="-input=true"
 TF_APPLY_CLI_OPTIONS?="-input=true"
 TF_DESTROY_CLI_OPTIONS?="-input=true"
+TMP_FOLDER?="./tmp"
 
 init:
 	terraform init ${TF_INIT_CLI_OPTIONS}
@@ -31,5 +32,16 @@ pre-shell: #check if the wireguard virtual machine exists
 shell: pre-shell
 	ssh -i "${PRIVATE_KEY_FILE}" -v ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]")
 
+wireguard-client-keys:
+	wg genkey | tee ${TMP_FOLDER}/client_privatekey | wg pubkey > ${TMP_FOLDER}/client_publickey
+
 wireguard-public-key:
-	@ssh -i "${PRIVATE_KEY_FILE}" ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]") sudo cat /tmp/server_privatekey
+	rm -rfv ./tmp
+	mkdir -p ./tmp
+	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]") 'sudo cat /tmp/server_publickey' > ${TMP_FOLDER}/server_publickey
+
+test: wireguard-public-key
+	curl ipinfo.io/ip
+	./scripts/wireguarg-client-cfg.sh
+	# sudo wg-quick up wg0
+	curl ipinfo.io/ip

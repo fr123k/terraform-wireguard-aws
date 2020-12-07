@@ -30,10 +30,12 @@ before_install:
   - rm terraform_${TF_VERSION}_linux_amd64.zip
 
 script:
-  - wg genkey | tee /tmp/client_privatekey | wg pubkey > /tmp/client_publickey
-  - export TF_VAR_client_public_key=$(cat /tmp/client_publickey)
+  - make wireguard-client-keys
+  - export TF_VAR_client_public_key=$(cat ./tmp/client_publickey)
   - printenv | sort
-  - make deploy test
+  - make deploy
+  - sleep 90
+  - make test
 
 after_script:
   - make cleanup
