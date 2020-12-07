@@ -23,7 +23,7 @@ recreate: clean create
 deploy: ssh-keygen init create
 
 ssh-keygen:
-	 ssh-keygen -t rsa -b 4096 -q -N "" -f ${PRIVATE_KEY_FILE} <<<n || true
+	echo -e 'n\n' | ssh-keygen -t rsa -b 4096 -q -N "" -f ${PRIVATE_KEY_FILE} || true
 
 pre-shell: #check if the wireguard virtual machine exists
 	terraform state show -state=terraform.tfstate module.wireguard.data.aws_instances.wireguards
