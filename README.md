@@ -386,10 +386,13 @@ the `SERVER_INDEX=1` you able to access the second virtual machine with ssh.
 ```
   SERVER_INDEX=1 make shell
 ```
+# Changes
+
+* setup travis build
 
 # Todos
 
-* setup travis build
+* support terraform workspaces to isolate travis build from local builds
 * build and aws ami image for wireguard (use packer for this maybe as part of this repo?)
 * make the email sending via mailjet optional and pass it from outside the wireguard module
 * store the wireguard server public key outside of the VM (github/s3) so that the client can fetch it or send them vie email

@@ -18,6 +18,7 @@ create: build
 
 clean:
 	terraform destroy ${TF_DESTROY_CLI_OPTIONS}
+	rm -rfv ./tmp
 
 recreate: clean create
 
@@ -32,11 +33,13 @@ pre-shell: #check if the wireguard virtual machine exists
 shell: pre-shell
 	ssh -i "${PRIVATE_KEY_FILE}" -v ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]")
 
-wireguard-client-keys:
+prepare:
+	mkdir -p ./tmp
+
+wireguard-client-keys: prepare
 	wg genkey | tee ${TMP_FOLDER}/client_privatekey | wg pubkey > ${TMP_FOLDER}/client_publickey
 
-wireguard-public-key:
-	rm -rfv ./tmp
+wireguard-public-key: prepare
 	mkdir -p ./tmp
 	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]") 'sudo cat /tmp/server_publickey' > ${TMP_FOLDER}/server_publickey
 
