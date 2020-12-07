@@ -19,9 +19,10 @@ env:
     - secure: GmzllvUaTsdC3oReHxgoV/7MNjmcvWVhMQnqnm9coc7L/bPWQe6CQ7W3E+u1y/d4j7/5FbbVI4xFawkYIy/T0bimtMp+fUNiMtU/Ez9FSclT0cq/wSL8GUvwpskH9sXMLR+ee8SOh9dWOI25blxxHUzTzbpvlsx0Hjr98B7sFLDj28PIkPQ8DCXrKPzuxYarNdDU/+LqUIsEgl6/3h6qUvzUznhLCjzE74lipNl2c8geTE91UAR6PL6eGt7kSPnWKKrX4CETvdQV9EGdV2Y7WZ4jYHIvMhUGEKP2nVfpY4588hbqXVnO9lI8WrQOoIVsgVb/UWTVa1Hvg320vFZKvC4xzOzkzLxpXtC+E5OwhtT5dgAtBKfNKko2NV/V1xs4jg3VOa6Wqvw/J1uUxqmVk5b/7BDxhTZsP68Onf90A4C//iYQtypX2gEmhfH6sM9z8vz8QWgVZyC1wWDKoXAw2i0ZyTGxzKtCEcj/yebIQ3SB0G2zP98Iv58xGyPhs1nhi8dzKe0RipoUtDgd4/5nhG0FO6HQ02D+2nsNLFDf1uzRQJG5jM0z1PeFwDXTLkX9GjW1TLEqzb8lTt53zUKrs5/eeOcloF2x3Cz0ztHWjQcgULDH2h6R1aikLSrQVWZkhx2Hp/7zZxp2y7/XLfqUGwwUNFBix3k3+9zvBldhGmg=
     - secure: cy/Tssto9GN8izq5bRA8mm+0meABb4Kos36oo3mclcx3YqyZSOEO56V+oNjbo5SkO6m34V5Izi8yia4Ixcb1s1Yd9JtXGjN/SD/EGAJbBEfC0gJrkmYHpdYw+szZB683FWqQaJWYO08NEk9UjMwzWls4QQhLkgpV0GVbJ5qgX09tlHSMJYEFVLxmFECMEsEBHHO0WM2vnAbofpjWG//RNFiw3cHDaT8WeieQ/1/z4kYsrYQc9dAckpI0VfdsI6Hy85hk9rD/RmciFnowGpbmDvywvUtV/9vBPYBsxPr+2/rF9g2FTpAWioaUt3wKVLLRkuTfxajB+Iok91A2KK3lVqKXdDVP9LxJoAM2y+Z7qfJ23aeN5zZ/NBttEXle8Ux74ruqXTlzou8OPTDF4YD7Xz1wvE/Nh45nRmc+UbMhWXGFVZK9fHOf2Z88ZA4IBxrVoMcUhuBxw5aY9MiVwvvH2ifF/75XdpNtSO0SPVNeFQpmP8tLKxUqPKgRjEBsNyY/LD4pJjKCzfkr6LnBRpP9Bypjb3s7jxBw8fxqxD5Y6OnSMQomqQTEOO/20Rp2eOVAjgJsxAcV+h3Hl2btmZgjajNlgPfCJaujJI5eVNWGO6v0bUKIkHbKWwjFPXlvcNoDW14YQmm1aW3ua/haukIdnqHEvttS9kapyY7cpAzmy00=
 
+services:
+  - docker
+
 before_install:
-  - sudo apt-get install software-properties-common wireguard resolvconf linux-headers-$(uname -r) -y
-  - sudo sysctl net.ipv6.conf.all.disable_ipv6=0
   - wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
   - unzip terraform_${TF_VERSION}_linux_amd64.zip
   - sudo mv terraform /usr/local/bin/

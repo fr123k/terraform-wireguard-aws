@@ -47,7 +47,12 @@ wireguard-public-key: prepare
 test: wireguard-public-key
 	curl ipinfo.io/ip
 	./scripts/wireguard-client-cfg.sh
-	sudo wg-quick up ./tmp/wg0.conf
+	docker run -d --privileged --restart=always --name wireguard-client --cap-add NET_ADMIN --cap-add SYS_MODULE --sysctl net.ipv6.conf.all.disable_ipv6=0 -v $(PWD)/tmp/wg0.conf:/etc/wireguard/wg0.conf \
+cmulk/wireguard-docker:alpine
 	sleep 30
 	curl ipinfo.io/ip
 	./scripts/wireguard-connection-validation.sh
+
+docker-wireguard-client:
+	docker run -d --privileged --restart=always --name wireguard-client --cap-add NET_ADMIN --cap-add SYS_MODULE --sysctl net.ipv6.conf.all.disable_ipv6=0 -v $(PWD)/tmp/wg0.conf:/etc/wireguard/wg0.conf \
+cmulk/wireguard-docker:alpine
