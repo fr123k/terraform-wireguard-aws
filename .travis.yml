@@ -31,7 +31,7 @@ script:
   - export TF_VAR_client_public_key=$(cat ./tmp/client_publickey)
   - printenv | sort
   - make deploy
-  - sleep 30
+  - sleep 60
   - make test
 
 after_script:

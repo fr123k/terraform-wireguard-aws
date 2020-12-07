@@ -41,6 +41,7 @@ wireguard-client-keys: prepare
 
 wireguard-public-key: prepare
 	mkdir -p ./tmp
+	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]") 'sudo cat /var/log/cloud-init-output.log'
 	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]") 'sudo cat /tmp/server_publickey' > ${TMP_FOLDER}/server_publickey
 
 test: wireguard-public-key
