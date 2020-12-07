@@ -15,8 +15,9 @@ data "template_file" "user_data" {
   template = file("${path.module}/templates/user-data.txt")
 
   vars = {
-    wg_server_port        = var.wg_server_port
-    peers                 = join("\n", data.template_file.wg_client_data_json.*.rendered)
+    wg_server_port          = var.wg_server_port
+    mailjet_api_credentials = var.mailjet_api_credentials
+    peers                   = join("\n", data.template_file.wg_client_data_json.*.rendered)
   }
 }
 
@@ -25,9 +26,9 @@ data "template_file" "wg_client_data_json" {
   count    = length(var.wg_client_public_keys)
 
   vars = {
-    client_pub_key       = element(values(var.wg_client_public_keys[count.index]), 0)
-    client_ip            = element(keys(var.wg_client_public_keys[count.index]), 0)
-    persistent_keepalive = var.wg_persistent_keepalive
+    client_pub_key          = element(values(var.wg_client_public_keys[count.index]), 0)
+    client_ip               = element(keys(var.wg_client_public_keys[count.index]), 0)
+    persistent_keepalive    = var.wg_persistent_keepalive
   }
 }
 

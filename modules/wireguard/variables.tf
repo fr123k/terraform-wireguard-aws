@@ -71,3 +71,8 @@ variable "env" {
   default     = "prod"
   description = "The name of environment for WireGuard. Used to differentiate multiple deployments"
 }
+
+variable "mailjet_api_credentials" {
+  default = ""
+  description = "The mailjet api credentials in the form API_KEY:SECRET_KEY"
+}

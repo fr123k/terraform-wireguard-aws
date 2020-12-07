@@ -1,0 +1,35 @@
+language: bash
+os: linux
+arch: arm64-graviton2
+
+sudo: required
+
+addons:
+  apt:
+    update: true
+
+# Export variables
+env:
+  global:
+    - TF_VERSION=0.14.0
+    - TF_INIT_CLI_OPTIONS="-input=false"
+    - TF_PLAN_CLI_OPTIONS="-lock=false -input=false"
+    - TF_APPLY_CLI_OPTIONS="-auto-approve -input=false"
+    - TF_DESTROY_CLI_OPTIONS="-auto-approve -input=false"
+
+before_install:
+  - sudo apt-get install software-properties-common -y
+  - apt-get install wireguard resolvconf linux-headers-$(uname -r) -y
+  - sudo apt-get -y install pwgen #used in Makefile to generate the random admin password 
+  - wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_{$TF_VERSION}_linux_amd64.zip
+  - unzip terraform_$TF_VERSION_linux_amd64.zip
+  - sudo mv terraform /usr/local/bin/
+  - rm terraform_$TF_VERSION_linux_amd64.zip
+
+script:
+  - wg genkey | tee /tmp/client_privatekey | wg pubkey > /tmp/client_publickey
+  - export TF_VAR_client_public_key=$(cat /tmp/client_publickey)
+  - make create
+
+after_script:
+  - make cleanup
