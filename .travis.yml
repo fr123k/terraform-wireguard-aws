@@ -34,8 +34,10 @@ script:
   - export TF_VAR_client_public_key=$(cat ./tmp/client_publickey)
   - printenv | sort
   - make deploy
+
+after_success:
   - sleep 90
   - make test
 
 after_script:
-  - make cleanup
+  - make clean

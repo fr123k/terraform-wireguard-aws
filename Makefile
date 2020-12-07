@@ -42,6 +42,8 @@ wireguard-public-key:
 
 test: wireguard-public-key
 	curl ipinfo.io/ip
-	./scripts/wireguarg-client-cfg.sh
-	# sudo wg-quick up wg0
+	./scripts/wireguard-client-cfg.sh
+	sudo wg-quick up ./tmp/wg0.conf
+	sleep 30
 	curl ipinfo.io/ip
+	./scripts/wireguard-connection-validation.sh
