@@ -7,7 +7,7 @@ wireguard-client:
 
 docker-wireguard-client: docker-wireguard wireguard-client
 	curl ipinfo.io/ip
-	docker run --privileged --cap-add NET_ADMIN --cap-add SYS_MODULE --sysctl net.ipv4.ip_forward=1 -e WIREGUARD_SERVER_IP=${WIREGUARD_SERVER_IP} -v $(PWD)/test/tmp/wg0.conf:/etc/wireguard/wg0.conf \
+	docker run --privileged --cap-add NET_ADMIN --cap-add SYS_MODULE -e WIREGUARD_SERVER_IP=${WIREGUARD_SERVER_IP} -v $(PWD)/test/tmp/wg0.conf:/etc/wireguard/wg0.conf \
 wireguard:local
 
 docker-wireguard:
