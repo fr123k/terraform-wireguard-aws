@@ -23,6 +23,7 @@ services:
   - docker
 
 before_install:
+  - sudo apt install wireguard
   - wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
   - unzip terraform_${TF_VERSION}_linux_amd64.zip
   - sudo mv terraform /usr/local/bin/
