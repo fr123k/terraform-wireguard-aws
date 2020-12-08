@@ -1,6 +1,7 @@
 language: bash
 os: linux
 arch: arm64-graviton2
+dist: bionic
 
 sudo: required
 
@@ -23,17 +24,18 @@ services:
   - docker
 
 before_install:
-  - sudo apt install wireguard
+  - sudo apt-get install wireguard-dkms wireguard linux-headers-$(uname --kernel-release)
   - wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
   - unzip terraform_${TF_VERSION}_linux_amd64.zip
   - sudo mv terraform /usr/local/bin/
   - rm terraform_${TF_VERSION}_linux_amd64.zip
 
 script:
-  - make wireguard-client
+  - make wireguard-client-keys
   - export TF_VAR_client_public_key=$(cat ./tmp/client_publickey)
   - make deploy
   - sleep 120
+  - sudo modprobe wireguard
   - make validate
 
 after_script:

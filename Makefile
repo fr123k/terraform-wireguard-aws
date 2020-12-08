@@ -6,7 +6,7 @@ TF_INIT_CLI_OPTIONS?="-input=true"
 TF_PLAN_CLI_OPTIONS?="-input=true"
 TF_APPLY_CLI_OPTIONS?="-input=true"
 TF_DESTROY_CLI_OPTIONS?="-input=true"
-TMP_FOLDER?="./tmp"
+TMP_FOLDER?="./test/tmp"
 
 init:
 	terraform init ${TF_INIT_CLI_OPTIONS}
@@ -36,19 +36,17 @@ shell: pre-shell
 	ssh -i "${PRIVATE_KEY_FILE}" -v ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]")
 
 prepare:
-	mkdir -p ./tmp
+	mkdir -p ${TMP_FOLDER}
 
-wireguard-client: prepare
+wireguard-client-keys: prepare
 	wg genkey | tee ${TMP_FOLDER}/client_privatekey | wg pubkey > ${TMP_FOLDER}/client_publickey
-	./scripts/wireguard-client-cfg.sh
 
 wireguard-public-key: prepare
 	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@${WIREGUARD_SERVER_IP} 'sudo cat /var/log/cloud-init-output.log'
 	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@${WIREGUARD_SERVER_IP} 'sudo cat /tmp/server_publickey' > ${TMP_FOLDER}/server_publickey
 
 validate: wireguard-public-key
-	curl ipinfo.io/ip
-	$(MAKE) -C test -e WIREGUARD_SERVER_IP=${WIREGUARD_SERVER_IP} docker-wireguard-client
+	$(MAKE) -C test -e WIREGUARD_SERVER_IP=${WIREGUARD_SERVER_IP} -e TMP_FOLDER=${TMP_FOLDER} docker-wireguard-client
 
 docker-wireguard-client:
 	docker run --privileged --restart=always --name wireguard-client --cap-add NET_ADMIN --cap-add SYS_MODULE --sysctl net.ipv6.conf.all.disable_ipv6=0 -e WATCH_CHANGES=1 -v $(PWD)/tmp/wg0.conf:/etc/wireguard/wg0.conf \

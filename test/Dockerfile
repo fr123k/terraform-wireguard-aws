@@ -5,7 +5,7 @@ FROM cmulk/wireguard-docker:alpine
 RUN apk update && apk add curl openresolv
 
 COPY run.sh /scripts
-COPY wireguard-connection-validation.sh /scripts
+COPY ./scripts/wireguard-connection-validation.sh /scripts
 
 
 WORKDIR /scripts

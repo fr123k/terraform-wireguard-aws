@@ -9,6 +9,6 @@ DNS = 1.1.1.1
 [Peer]
 PublicKey = $(cat ./tmp/server_publickey)
 AllowedIPs = 0.0.0.0/0, ::/0
-Endpoint = $(terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]"):51820
+Endpoint = ${WIREGUARD_SERVER_IP}:51820
 PersistentKeepalive = 25
 EOF
