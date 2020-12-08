@@ -38,11 +38,11 @@ shell: pre-shell
 prepare:
 	mkdir -p ./tmp
 
-wireguard-client-keys: prepare
+wireguard-client: prepare
 	wg genkey | tee ${TMP_FOLDER}/client_privatekey | wg pubkey > ${TMP_FOLDER}/client_publickey
+	./scripts/wireguard-client-cfg.sh
 
 wireguard-public-key: prepare
-	mkdir -p ./tmp
 	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@${WIREGUARD_SERVER_IP} 'sudo cat /var/log/cloud-init-output.log'
 	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@${WIREGUARD_SERVER_IP} 'sudo cat /tmp/server_publickey' > ${TMP_FOLDER}/server_publickey
 
