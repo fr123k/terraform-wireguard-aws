@@ -22,7 +22,6 @@ stop_interfaces() {
     done
 }
 
-start_interfaces
 
 # Add masquerade rule for NAT'ing VPN traffic bound for the Internet
 
@@ -38,12 +37,15 @@ finish () {
     if [ $IPTABLES_MASQ -eq 1 ]; then
         iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
     fi
-
     exit 0
 }
 
+ping 1.1.1.1 -c 4
+start_interfaces
 sleep 5
+wg show
+ping 1.1.1.1 -c 4
 curl ipinfo.io/ip
 ./wireguard-connection-validation.sh
-stop_interfaces
+finish
 exit 0

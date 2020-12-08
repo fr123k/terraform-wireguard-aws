@@ -7,6 +7,7 @@ RUN apk update && apk add curl openresolv
 COPY run.sh /scripts
 COPY ./scripts/wireguard-connection-validation.sh /scripts
 
+ENV IPTABLES_MASQ=1
 
 WORKDIR /scripts
 
