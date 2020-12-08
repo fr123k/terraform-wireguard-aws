@@ -33,7 +33,7 @@ before_install:
 
 script:
   - make wireguard-client-keys
-  - export TF_VAR_client_public_key=$(cat ./tmp/client_publickey)
+  - export TF_VAR_client_public_key=$(cat ./test/tmp/client_publickey)
   - make deploy
   - sleep 120
   - make validate
