@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/bin/bash -e
 
-WIREGUARD_SERVER_IP=$(terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]") 
 EXTERNAL_IP=$(curl ipinfo.io/ip)
 if [ "${WIREGUARD_SERVER_IP}" == "${EXTERNAL_IP}" ]; then
     echo "Extern ip equal wireguard server ip so VPN connection successful established."

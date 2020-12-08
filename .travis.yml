@@ -34,7 +34,7 @@ script:
   - printenv | sort
   - make deploy
   - sleep 120
-  - make test
+  - make validate
 
 after_script:
   - make clean

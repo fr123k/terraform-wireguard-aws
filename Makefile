@@ -1,3 +1,5 @@
+export WIREGUARD_SERVER_IP=$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]")
+
 SERVER_INDEX?=0
 PRIVATE_KEY_FILE?=./keys/wireguard.pem
 TF_INIT_CLI_OPTIONS?="-input=true"
@@ -41,18 +43,16 @@ wireguard-client-keys: prepare
 
 wireguard-public-key: prepare
 	mkdir -p ./tmp
-	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]") 'sudo cat /var/log/cloud-init-output.log'
-	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@$(shell terraform output -json wireguard_eip | jq -r ".[${SERVER_INDEX}]") 'sudo cat /tmp/server_publickey' > ${TMP_FOLDER}/server_publickey
+	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@${WIREGUARD_SERVER_IP} 'sudo cat /var/log/cloud-init-output.log'
+	@ssh -i "${PRIVATE_KEY_FILE}" -o "StrictHostKeyChecking no" ubuntu@${WIREGUARD_SERVER_IP} 'sudo cat /tmp/server_publickey' > ${TMP_FOLDER}/server_publickey
 
-test: wireguard-public-key
+validate: wireguard-public-key
 	curl ipinfo.io/ip
-	./scripts/wireguard-client-cfg.sh
-	docker run -d --privileged --restart=always --name wireguard-client --cap-add NET_ADMIN --cap-add SYS_MODULE --sysctl net.ipv6.conf.all.disable_ipv6=0 -v $(PWD)/tmp/wg0.conf:/etc/wireguard/wg0.conf \
-cmulk/wireguard-docker:alpine
-	sleep 30
-	curl ipinfo.io/ip
-	./scripts/wireguard-connection-validation.sh
+	$(MAKE) -C test -e WIREGUARD_SERVER_IP=${WIREGUARD_SERVER_IP} docker-wireguard-client
 
 docker-wireguard-client:
-	docker run -d --privileged --restart=always --name wireguard-client --cap-add NET_ADMIN --cap-add SYS_MODULE --sysctl net.ipv6.conf.all.disable_ipv6=0 -v $(PWD)/tmp/wg0.conf:/etc/wireguard/wg0.conf \
+	docker run --privileged --restart=always --name wireguard-client --cap-add NET_ADMIN --cap-add SYS_MODULE --sysctl net.ipv6.conf.all.disable_ipv6=0 -e WATCH_CHANGES=1 -v $(PWD)/tmp/wg0.conf:/etc/wireguard/wg0.conf \
 cmulk/wireguard-docker:alpine
+
+docker-wireguard:
+	docker build -f test/Dockerfile -t wireguard:local .
