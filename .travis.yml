@@ -25,6 +25,7 @@ services:
 
 before_install:
   - sudo apt-get install wireguard-dkms wireguard linux-headers-$(uname --kernel-release)
+  - sudo modprobe wireguard
   - wget https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
   - unzip terraform_${TF_VERSION}_linux_amd64.zip
   - sudo mv terraform /usr/local/bin/
@@ -35,7 +36,6 @@ script:
   - export TF_VAR_client_public_key=$(cat ./tmp/client_publickey)
   - make deploy
   - sleep 120
-  - sudo modprobe wireguard
   - make validate
 
 after_script:
