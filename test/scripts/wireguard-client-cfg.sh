@@ -5,8 +5,6 @@ cat > ./tmp/wg0.conf << EOF
 Address = 10.8.0.2/32
 PrivateKey = $(cat ./tmp/client_privatekey)
 DNS = 1.1.1.1
-PostUp = iptables -A FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-PostDown = iptables -D FORWARD -i wg0 -j ACCEPT; iptables -A FORWARD -o wg0 -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
 
 [Peer]
 PublicKey = $(cat ./tmp/server_publickey)
