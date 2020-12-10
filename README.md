@@ -1,10 +1,12 @@
+[![Build Status](https://travis-ci.com/fr123k/terraform-wireguard-aws.svg?branch=master)](https://travis-ci.com/fr123k/terraform-wireguard-aws)
+
 # terraform-wireguard-aws
 
 # AWS Authentication
 
 ## With AWS Cli
 
-### Prerequisties
+### Prerequisites
 
 * awscli
 
@@ -51,9 +53,19 @@ Backend: local
 
 ## Prerequisites
 
-* add your ssh rsa public key to the `keys/aws_rsa.pub` as file
+* add your ssh rsa public key to the `keys/wireguard.pem.pub` file
 
-## Wireguard Keys
+## Configuration
+
+### Variables
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| client\_public\_key | The wireguard client public key. | `string` | `"XSGknxaW7PwqiFD061TemUozeTxxafusIRr5dz2fUhw="` | no |
+| mailjet\_api\_credentials | The mailjet api credentials in the form API\_KEY:SECRET\_KEY | `string` | `""` | no |
+| vpn\_enabled\_ssh | If true the ssh port restricted to the wireguard network range. Otherwise its open for public (0.0.0.0/0). | `bool` | `"true"` | no |
+
+### Client Wireguard Key (client\_public\_key)
 
 - Install the WireGuard tools for your OS: https://www.wireguard.com/install/
 - Generate a key pair for the clients
@@ -75,7 +87,7 @@ Backend: local
   The `cidrhost` function calculate the client ip address based on the subnet cidr in this example the cidr is `10.8.0.0/24` that results then in the following ip address `10.8.0.2/32` for the client and the value `XSGknxa................................fUhw=`
   is the generated client public key from above
 
-## VPC
+### VPC
 
 - Adjust the `network.tf` file to your needs for example change the subnet cidr.
   ```
@@ -84,7 +96,53 @@ Backend: local
     }
   ```
 
+### SSH (vpn\_enabled\_ssh)
+
+The default is that this variable is set to `true` and therefore the ssh port is only accessible with an established
+wireguard VPN connection.
+
+For troubleshooting or debugging purpose it is helpful to access the wireguard virtual machine even without the
+need to have an wireguard VPN connection in place. If the wireguard server failed to start or if you can't get the
+wireguard server public key without ssh.
+
+To open the ssh port for public access set the value of the `vpn_enabled_ssh` terraform variable to `false`.
+
+```
+ export TF_VAR_vpn_enabled_ssh=false
+ make create
+```
+
+### Mailjet (mailjet\_api\_credentials)
+
+#### Prerequisites
+
+* mailjet account with certified sender address and api keys
+* change the sender and recipient address in the `user-data.txt` file
+
+This implementation is a proof of concept to share the wireguard server public elastic ip address and the
+public key without the need to have ssh access to the server.
+
+**It's not meant to be used because the sender/recipient address is hardcoded and eMail is not a reliable message format for this kind of information.**
+
+The underlying idea is to push the wireguard connection credentials like
+* public elastic ip address
+* wireguard public key
+to the client with an third party communication channel.
+
+This connection credentials are not static and change always when the wireguard infrastructure is recreated.
+
+```
+ export TF_VAR_mailjet_api_credentials=<API_KEY:SECRET_KEY>
+ make create
+```
+
 ## Infrastructure
+
+### Output Variables
+
+| Name | Description |
+|------|-------------|
+| wireguard\_eips | The list of elastic ip addresses assigned to the wireguard virtual machines. |
 
 ### Build
 
@@ -181,7 +239,7 @@ Example Output:
   Plan: 9 to add, 0 to change, 0 to destroy.
 
   Changes to Outputs:
-    + wireguard_eip = (known after apply)
+    + wireguard_eips = (known after apply)
 
   ------------------------------------------------------------------------
 
@@ -309,7 +367,7 @@ Example Output:
   Plan: 0 to add, 0 to change, 9 to destroy.
 
   Changes to Outputs:
-    - wireguard_eip = [
+    - wireguard_eips = [
         - "34.245.64.222",
       ] -> null
 
@@ -374,14 +432,14 @@ the following command to establish an ssh connection.
 ```
   make shell
 ```
-The previous `make shell` is a shortcut make target and the full make target looks likt this. 
+The previous `make shell` is a shortcut make target and the full make target looks like this. 
 ```
   SERVER_INDEX=0 make shell
 ```
 
 #### Multiple Wireguard Server's
 
-If you have two wireguard virtual machine created as part of the auto scaling group then by specifiying
+If you have two wireguard virtual machine created as part of the auto scaling group then by specifying
 the `SERVER_INDEX=1` you able to access the second virtual machine with ssh.
 ```
   SERVER_INDEX=1 make shell
@@ -389,12 +447,13 @@ the `SERVER_INDEX=1` you able to access the second virtual machine with ssh.
 # Changes
 
 * setup travis build
+* send the wireguard elastic ip address and its public key via email with mailjet (optional)
+* securing the ssh port with wireguard VPN (optional)
 
 # Todos
 
 * support terraform workspaces to isolate travis build from local builds
-* build and aws ami image for wireguard (use packer for this maybe as part of this repo?)
-* make the email sending via mailjet optional and pass it from outside the wireguard module
-* store the wireguard server public key outside of the VM (github/s3) so that the client can fetch it or send them vie email
-* configure the client ips and publickeys outside of terraform so that a change doesn't need a full recreation of the wireguard VM
+* build and AWS AMI image for wireguard (use packer for this maybe as part of this repo?)
+* make the email sending via Mailjet optional and pass it from outside the wireguard module
+* configure the client ip addresses and public keys outside of terraform so that a change doesn't need a full recreation of the wireguard VM
   only a restart of the wireguard systemd service would be needed.

@@ -40,12 +40,17 @@ finish () {
     exit 0
 }
 
-ping 1.1.1.1 -c 4
+check_network() {
+    ping 1.1.1.1 -c 4
+    dig +short google.de
+    curl ipinfo.io/ip
+}
+
+check_network
 start_interfaces
 sleep 5
 wg show
-ping 1.1.1.1 -c 4
-curl ipinfo.io/ip
+check_network
 ./wireguard-connection-validation.sh
 finish
 exit 0
