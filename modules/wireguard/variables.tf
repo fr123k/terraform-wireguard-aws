@@ -76,3 +76,9 @@ variable "mailjet_api_credentials" {
   default = ""
   description = "The mailjet api credentials in the form API_KEY:SECRET_KEY"
 }
+
+variable "vpn_enabled_ssh" {
+  default = "true"
+  type = bool
+  description = "If true the ssh port restricted to the wireguard network range. Otherwise its open for public (0.0.0.0/0)."
+}

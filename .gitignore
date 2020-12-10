@@ -1,9 +1,10 @@
+*.pem
+*.pem.pub
 .terraform
 .terraform.*
+.vscode/settings.json
 terraform.plan
 terraform.tfstate
 terraform.tfstate.backup
 terraform.tfstate.*.backup
-.vscode/settings.json
 tmp/
-

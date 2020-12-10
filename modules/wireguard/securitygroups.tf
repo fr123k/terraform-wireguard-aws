@@ -18,11 +18,10 @@ resource "aws_security_group" "sg_wireguard_external" {
   }
 
   ingress {
-    from_port         = 22
-    to_port           = 22
-    protocol          = "tcp"
-    cidr_blocks       = ["0.0.0.0/0"]
-    #cidr_blocks       = [var.subnet.cidr_block]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.vpn_enabled_ssh ? var.subnet.cidr_block : "0.0.0.0/0"]
   }
 
   egress {
