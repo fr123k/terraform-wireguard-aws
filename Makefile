@@ -50,10 +50,3 @@ wireguard-public-key: prepare pre-shell
 
 validate: wireguard-public-key
 	$(MAKE) -C test -e WIREGUARD_SERVER_IP=${WIREGUARD_SERVER_IP} -e TMP_FOLDER=${TMP_FOLDER} wireguard-client
-
-docker-wireguard-client:
-	docker run --privileged --restart=always --name wireguard-client --cap-add NET_ADMIN --cap-add SYS_MODULE --sysctl net.ipv6.conf.all.disable_ipv6=0 -e WATCH_CHANGES=1 -v $(PWD)/tmp/wg0.conf:/etc/wireguard/wg0.conf \
-cmulk/wireguard-docker:alpine
-
-docker-wireguard:
-	docker build -f test/Dockerfile -t wireguard:local .

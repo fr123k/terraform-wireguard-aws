@@ -13,6 +13,6 @@ module "wireguard" {
   mailjet_api_credentials = var.mailjet_api_credentials
   vpn_enabled_ssh         = var.vpn_enabled_ssh
   wg_client_public_keys = [
-    { "${cidrhost(aws_subnet.wireguard.cidr_block, 2)}/32" = var.client_public_key }, # make sure these are correct
+    { "${cidrhost(aws_subnet.wireguard.cidr_block, 3)}/32" = var.client_public_key }, # make sure these are correct
   ]
 }

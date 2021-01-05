@@ -80,11 +80,11 @@ Backend: local
         vpc_id                = aws_vpc.wireguard.id
         subnet                = aws_subnet.wireguard
         wg_client_public_keys = [
-            {"${cidrhost(aws_subnet.wireguard.cidr_block, 2)/32" = "XSGknxa................................fUhw="},
+            {"${cidrhost(aws_subnet.wireguard.cidr_block, 3)/32" = "XSGknxa................................fUhw="},
         ]
     }
   ```
-  The `cidrhost` function calculate the client ip address based on the subnet cidr in this example the cidr is `10.8.0.0/24` that results then in the following ip address `10.8.0.2/32` for the client and the value `XSGknxa................................fUhw=`
+  The `cidrhost` function calculate the client ip address based on the subnet cidr in this example the cidr is `10.8.0.0/24` that results then in the following ip address `10.8.0.3/32` for the client and the value `XSGknxa................................fUhw=`
   is the generated client public key from above
 
 ### VPC
